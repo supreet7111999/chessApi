@@ -8,14 +8,15 @@ const initializeSocket = (server) =>
   const io = socket(server, 
     {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "http://localhost:5173/",
     },
   })
   io.on("connection",(socket)=>{
     console.log("Connected hogye");
+    socket.on("churan",()=>{
+      console.log("chuan");
+    })
   })
-
-
 }
 
 
