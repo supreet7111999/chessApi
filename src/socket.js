@@ -57,11 +57,16 @@ const initializeSocket = (server) => {
           white:socket.id,
         }
         roomPlayers.push(newRoom);
+        socket.join(roomId);
+        io.to(roomId).emit("yourColour","white");
       }
       else{
         // roomPlayers.roomId.black=socket.id;
         // room["black"]=socket.id;
         room.black=socket.id;
+        socket.join(roomId);
+        io.to(roomId).emit("yourColour","black");
+        io.to(roomId).emit("gameStart");
       }
 
       console.log("Current Room Players:", roomPlayers);
