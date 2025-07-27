@@ -1,7 +1,12 @@
 const socket = require("socket.io");
 
 
-const roomPlayers = {};
+let roomPlayers = []
+  // roomId:{
+  //   white:"",
+  //   black:""
+  // }
+// };
 
 const initializeSocket = (server) => {
 
@@ -13,26 +18,58 @@ const initializeSocket = (server) => {
     },
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", (socket) => 
+    {
     console.log("Connected hogye");
-    console.log(socket);
-    socket.on("churan", () => {
-      console.log("chuan"); // ✅ This should print
-    });
+    // console.log(socket);
+    // socket.on("churan", () => {
+    //   console.log("chuan"); // ✅ This should print
+    // });
     socket.on("disconnect",()=>{
       console.log(socket.id + " disconnected");
-    })
-    socket.on("joinChat",(roomId)=>{
-      // if(!roomPlayers[roomId])
-      // {
-      //   roomPlayers[roomId]={}
-      // }
+      const roomId=socket.data.roomId;
+      if(!roomId)
+        return;
       console.log(roomId);
+      let room=roomPlayers.find((room)=>room.roomId===roomId);
+      if(room.white==socket.id)
+        delete room.white;
+      else if(room.black==socket.id)
+        delete room.black;
+      if(!room.white && !room.black)
+        roomPlayers = roomPlayers.filter((r) => r.roomId !== roomId);
+      // if(roomPlayers.roomId.white==socket.id)
+      //   delete roomPlayers.roomId.white;
+      // else if(roomPlayers.roomId.black==socket.id)
+      //   delete roomPlayers.roomId.black;
+      // else 
+      //   delete roomPlayers.roomId;
     })
-  });
-  
+    socket.on("joinChat", (roomId) => {
+      console.log("Joining Room:", roomId);
+      socket.data.roomId=roomId;
+      let room = roomPlayers.find((room) => room.roomId === roomId);
+
+      if(!room)
+      {
+        newRoom={
+          roomId:roomId,
+          white:socket.id,
+        }
+        roomPlayers.push(newRoom);
+      }
+      else{
+        // roomPlayers.roomId.black=socket.id;
+        // room["black"]=socket.id;
+        room.black=socket.id;
+      }
+
+      console.log("Current Room Players:", roomPlayers);
+    });
+
+    }
    
   
-};
+  )};
 
 module.exports = initializeSocket;
